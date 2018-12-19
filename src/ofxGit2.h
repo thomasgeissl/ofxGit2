@@ -9,11 +9,18 @@ namespace ofxGit {
 
 		bool isRepository();
 		bool clone(std::string url);
+		bool checkoutCommit(std::string hash);
+		bool checkoutTag(std::string name);
 		bool checkout(std::string checkout);
 		std::string getCommitHash();
 
+		bool isTag(std::string name);
+		// bool isBranch(std::string name);
+		bool isCommit(std::string hash);
+
 		private:
-		git_repository *_repo = NULL;
+		git_repository *_repo = nullptr;
 		std::string _path;
+		int _error;
 	};
 };
