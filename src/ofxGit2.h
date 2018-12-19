@@ -13,6 +13,7 @@ namespace ofxGit {
 		bool checkoutTag(std::string name);
 		bool checkout(std::string checkout);
 		std::string getCommitHash();
+		std::string getRemoteUrl(std::string name = "origin");
 
 		bool isTag(std::string name);
 		// bool isBranch(std::string name);

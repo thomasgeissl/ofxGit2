@@ -71,7 +71,16 @@ bool ofxGit::repository::checkout(std::string checkout) {
 	return false;
 }
 
+std::string ofxGit::repository::getRemoteUrl(std::string name){
+	git_remote *remote = nullptr;
+	_error = git_remote_lookup(&remote, _repo, name.c_str());
 
+	// const char *name = git_remote_name(remote);
+	const char *url  = git_remote_url(remote);
+	// const char *pushurl = git_remote_pushurl(remote);
+	// TODO: free remote
+	return url;
+}
 std::string ofxGit::repository::getCommitHash() {
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 	if (_error < 0) {
