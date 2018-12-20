@@ -5,5 +5,6 @@ meta:
 	ADDON_TAGS = "git" "libgit2"
 	ADDON_URL = https://github.com/thomasgeissl/ofxGit2
 
-common:
+linux64:
 	ADDON_PKG_CONFIG_LIBRARIES = libgit2
+	ADDON_LDFLAGS = -L/usr/lib/x86_64-linux-gnu/libgit2.a
