@@ -6,5 +6,5 @@ meta:
 	ADDON_URL = https://github.com/thomasgeissl/ofxGit2
 
 linux64:
-	ADDON_PKG_CONFIG_LIBRARIES = libgit2
+	# ADDON_PKG_CONFIG_LIBRARIES = libgit2
 	ADDON_LIBS = /usr/lib/x86_64-linux-gnu/libgit2.a
