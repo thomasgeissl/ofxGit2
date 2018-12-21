@@ -9,4 +9,4 @@ linux64:
 	# ADDON_PKG_CONFIG_LIBRARIES = libgit2
 	ADDON_LIBS = /usr/lib/x86_64-linux-gnu/libgit2.a
 	ADDON_LIBS += /usr/lib/x86_64-linux-gnu/libssh2.a
-	ADDON_INCLUDES = /usr/include/libssh2.h
+	# ADDON_INCLUDES = /usr/include/libssh2.h
