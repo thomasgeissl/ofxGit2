@@ -1,9 +1,15 @@
 # ofxGit2
 
 ## description
-openFrameworks addon for working with git repositories
+openFrameworks addon for working with git repositories.
 
-This is a work in progress and mostly broken.
+This is a work in progress and only features needed for ofPackageManager are added so far.
+
+## Build status
+[![Build Status](https://travis-ci.org/thomasgeissl/ofxGit2.svg?branch=master)](https://travis-ci.org/thomasgeissl/ofxGit2)
+
+## TODOs
+* include libs for linux and win, update addon_config.mk
 
 ## license
 This project is released under MIT license, please note that dependencies might be released differently.
