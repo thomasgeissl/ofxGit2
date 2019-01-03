@@ -8,7 +8,12 @@ bool ofxGit::repository::isRepository() {
 	return error >= 0;
 }
 bool ofxGit::repository::clone(std::string url) {
-	int error = git_clone(&_repo, url.c_str(), _path.c_str(), NULL);
+	git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
+	clone_opts.checkout_opts.progress_cb = checkoutProgressCallback;
+	clone_opts.fetch_opts.callbacks.transfer_progress = transferProgressCallback;
+
+
+	int error = git_clone(&_repo, url.c_str(), _path.c_str(), &clone_opts);
 	if (error < 0) {
 		ofLogError("ofxGit2") << "Could not clone repository:" << giterr_last()->message;
 	}
@@ -21,6 +26,7 @@ bool ofxGit::repository::checkoutCommit(std::string hash) {
 	}
 	git_object *treeish = NULL;
 	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
+	opts.progress_cb = checkoutProgressCallback;
 	opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 
@@ -52,6 +58,7 @@ bool ofxGit::repository::checkoutTag(std::string name) {
 		return false;
 	}
 	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
+	opts.progress_cb = checkoutProgressCallback;
 	_error = git_checkout_tree(_repo, treeish, &opts);
 	if (_error < 0) {
 		ofLogError("ofxGit2") << "Could not checkout tree: " << giterr_last()->message;
@@ -134,4 +141,15 @@ bool ofxGit::repository::isCommit(std::string hash){
 		return false;
 	}
 	return _error >= 0;
+}
+
+int ofxGit::repository::transferProgressCallback(const git_transfer_progress *stats, void *payload){
+	float v = (float)stats->received_objects / stats->total_objects;
+	ofLogNotice("ofxGit2", "transfer progress: %f %%", v*100);
+	return 0;
+}
+
+void ofxGit::repository::checkoutProgressCallback(const char *path, size_t cur, size_t tot, void *payload){
+	float v = (float)cur / tot;
+	ofLogNotice("ofxGit2", "checkout progress: %f %%", v*100);
 }

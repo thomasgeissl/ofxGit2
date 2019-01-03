@@ -19,6 +19,9 @@ namespace ofxGit {
 		// bool isBranch(std::string name);
 		bool isCommit(std::string hash);
 
+		static int transferProgressCallback(const git_transfer_progress *stats, void *payload);
+		static void checkoutProgressCallback(const char *path, size_t cur, size_t tot, void *payload);
+
 		private:
 		git_repository *_repo = nullptr;
 		std::string _path;
