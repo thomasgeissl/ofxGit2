@@ -4,8 +4,8 @@ ofxGit::repository::repository(std::string path) : _path(path) {
 	git_libgit2_init();
 }
 bool ofxGit::repository::isRepository() {
-	int error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
-	return error >= 0;
+	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
+	return _error >= 0;
 }
 bool ofxGit::repository::clone(std::string url) {
 	git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
@@ -79,7 +79,9 @@ bool ofxGit::repository::checkout(std::string checkout) {
 }
 
 std::string ofxGit::repository::getRemoteUrl(std::string name){
+	ofLogVerbose("ofxGit2") << "getting remote url of " << name;
 	git_remote *remote = nullptr;
+	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 	_error = git_remote_lookup(&remote, _repo, name.c_str());
 
 	// const char *name = git_remote_name(remote);
