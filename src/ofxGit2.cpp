@@ -51,21 +51,49 @@ bool ofxGit::repository::checkoutTag(std::string name) {
 		ofLogError("ofxGit2") << "Could not open repository: " << giterr_last()->message;
 		return false;
 	}
-	git_object *treeish = nullptr;
-	_error = git_revparse_single(&treeish, _repo, name.c_str());
-	if (_error < 0) {
-		ofLogError("ofxGit2") << "Could not parse revision: " << giterr_last()->message;
-		return false;
-	}
-	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
-	opts.progress_cb = checkoutProgressCallback;
-	_error = git_checkout_tree(_repo, treeish, &opts);
-	if (_error < 0) {
-		ofLogError("ofxGit2") << "Could not checkout tree: " << giterr_last()->message;
-		return false;
-	}
+	// git_object *treeish = nullptr;
+	// _error = git_revparse_single(&treeish, _repo, name.c_str());
+	// if (_error < 0) {
+	// 	ofLogError("ofxGit2") << "Could not parse revision: " << giterr_last()->message;
+	// 	return false;
+	// }
+	// git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
+	// opts.progress_cb = checkoutProgressCallback;
+	// _error = git_checkout_tree(_repo, treeish, &opts);
+	// if (_error < 0) {
+	// 	ofLogError("ofxGit2") << "Could not checkout tree: " << giterr_last()->message;
+	// 	return false;
+	// }
 	// TODO
 	// git_repository_set_head_detached(_repo, treeish->oid);
+
+	git_reference *ref;
+	std::string tagRef = "refs/tags/";
+	tagRef += name;
+    git_reference_lookup(&ref, _repo, "refs/heads/master");
+
+    git_reference *new_ref;
+    git_reference_lookup(&new_ref, _repo, tagRef.c_str());
+
+    git_revwalk *walker;
+    git_revwalk_new(&walker, _repo);
+    git_revwalk_push_ref(walker, tagRef.c_str());
+
+
+    git_oid oid;
+    git_revwalk_next(&oid, walker);
+
+    git_reference_set_target(&new_ref, ref, &oid, "message");
+
+    git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
+
+    _error = git_repository_set_head_detached(_repo,&oid);
+	//  cerr<<"problem occured while detaching head"<< endl;
+
+    _error = git_checkout_head(_repo, &opts);
+	//  cerr << "problem checkout head" << endl;
+
+    git_revwalk_free(walker);
 	return _error >= 0;
 
 }

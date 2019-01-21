@@ -12,4 +12,7 @@ int main(){
     ofLogNotice("main") << "-1 is tag " << repo.isTag("-1");
     ofLogNotice("main") << "successfully checked out commit 2f0e6343c817a4f5a33b60339c82b5d10be8af01: " << repo.checkoutCommit("2f0e6343c817a4f5a33b60339c82b5d10be8af01");
     ofLogNotice("main") << "current hash: " << repo.getCommitHash();
+    repo.checkoutCommit("511173e7a43b0162cc80c8f630a51b6f0fe66925");
+    ofLogNotice("main") << "successfully checked out tag 1.1.1: " << repo.checkoutTag("1.1.1");
+    ofLogNotice("main") << "current hash: " << repo.getCommitHash();
 }
