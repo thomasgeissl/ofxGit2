@@ -140,13 +140,13 @@ std::string ofxGit::repository::getCommitHash() {
 bool ofxGit::repository::isTag(std::string name){
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 	if (_error < 0) {
-		ofLogError("ofxGit2") << "Could not open repository: " << giterr_last()->message;
+		// ofLogError("ofxGit2") << "Could not open repository: " << giterr_last()->message;
 		return false;
 	}
 	git_object *treeish = nullptr;
 	_error = git_revparse_single(&treeish, _repo, name.c_str());
 	if (_error < 0) {
-		ofLogError("ofxGit2") << "Could not parse revision: " << giterr_last()->message;
+		// ofLogError("ofxGit2") << "Could not parse revision: " << giterr_last()->message;
 		return false;
 	}
 	// git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
@@ -161,13 +161,13 @@ bool ofxGit::repository::isCommit(std::string hash){
 	git_oid oid;
 	_error = git_oid_fromstr(&oid, sha);
 	if (_error < 0) {
-		ofLogError("ofxGit2") << "Could not get oid from string:" << giterr_last()->message;
+		// ofLogError("ofxGit2") << "Could not get oid from string:" << giterr_last()->message;
 		return false;
 	}
 	git_commit *commit;
 	_error = git_commit_lookup(&commit, _repo, &oid);
 	if (_error < 0) {
-		ofLogError("ofxGit2") << "Could not lookup commit:" << giterr_last()->message;
+		// ofLogError("ofxGit2") << "Could not lookup commit:" << giterr_last()->message;
 		return false;
 	}
 	return _error >= 0;
