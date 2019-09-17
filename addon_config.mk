@@ -11,3 +11,6 @@ linux64:
 	# ADDON_LIBS += libs/libssh2/lib/linux64/libssh2.a
 	ADDON_LDFLAGS = -lgit2 -lssh2 -L/usr/lib/x86_64-linux-gnu/
 	# ADDON_INCLUDES = /usr/include/libssh2.h
+vs:
+	ADDON_LIBS += libs/libgit2/lib/vs/git2.lib
+	ADDON_DLLS_TO_COPY += libs/libgit2/lib/vs/git2.dll
