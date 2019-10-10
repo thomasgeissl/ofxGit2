@@ -3,8 +3,9 @@
 #include "ofLog.h"
 #include "ofUtils.h"
 
-int main(){
-    ofDirectory dataPath = ofToDataPath(".");
+int main()
+{
+    ofDirectory dataPath = ofDirectory(ofToDataPath("."));
     if (!dataPath.exists())
     {
         dataPath.create();
