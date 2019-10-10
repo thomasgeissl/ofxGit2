@@ -11,8 +11,6 @@
 #include "types.h"
 #include "oid.h"
 #include "annotated_commit.h"
-#include "merge.h"
-#include "checkout.h"
 
 /**
  * @file git2/rebase.h
@@ -147,13 +145,12 @@ typedef struct {
 } git_rebase_operation;
 
 /**
- * Initialize git_rebase_options structure
- *
  * Initializes a `git_rebase_options` with default values. Equivalent to
- * creating an instance with `GIT_REBASE_OPTIONS_INIT`.
+ * creating an instance with GIT_REBASE_OPTIONS_INIT.
  *
- * @param opts The `git_rebase_options` struct to initialize.
- * @param version The struct version; pass `GIT_REBASE_OPTIONS_VERSION`.
+ * @param opts the `git_rebase_options` instance to initialize.
+ * @param version the version of the struct; you should pass
+ *        `GIT_REBASE_OPTIONS_VERSION` here.
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_rebase_init_options(

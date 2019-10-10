@@ -7,15 +7,10 @@
 #ifndef INCLUDE_sys_git_merge_h__
 #define INCLUDE_sys_git_merge_h__
 
-#include "git2/common.h"
-#include "git2/types.h"
-#include "git2/index.h"
-#include "git2/merge.h"
-
 /**
  * @file git2/sys/merge.h
  * @brief Git merge driver backend and plugin routines
- * @defgroup git_merge Git merge driver APIs
+ * @defgroup git_backend Git custom backend APIs
  * @ingroup Git
  * @{
  */

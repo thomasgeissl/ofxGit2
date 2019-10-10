@@ -121,9 +121,10 @@ typedef int (*git_submodule_cb)(
 /**
  * Submodule update options structure
  *
- * Initialize with `GIT_SUBMODULE_UPDATE_OPTIONS_INIT`. Alternatively, you can
- * use `git_submodule_update_init_options`.
+ * Use the GIT_SUBMODULE_UPDATE_OPTIONS_INIT to get the default settings,
+ * like this:
  *
+ * git_submodule_update_options opts = GIT_SUBMODULE_UPDATE_OPTIONS_INIT;
  */
 typedef struct git_submodule_update_options {
 	unsigned int version;
@@ -159,13 +160,11 @@ typedef struct git_submodule_update_options {
 	GIT_FETCH_OPTIONS_INIT, 1 }
 
 /**
- * Initialize git_submodule_update_options structure
+ * Initializes a `git_submodule_update_options` with default values.
+ * Equivalent to creating an instance with GIT_SUBMODULE_UPDATE_OPTIONS_INIT.
  *
- * Initializes a `git_submodule_update_options` with default values. Equivalent to
- * creating an instance with `GIT_SUBMODULE_UPDATE_OPTIONS_INIT`.
- *
- * @param opts The `git_submodule_update_options` struct to initialize.
- * @param version The struct version; pass `GIT_SUBMODULE_UPDATE_OPTIONS_VERSION`.
+ * @param opts The `git_submodule_update_options` instance to initialize.
+ * @param version Version of struct; pass `GIT_SUBMODULE_UPDATE_OPTIONS_VERSION`
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_submodule_update_init_options(

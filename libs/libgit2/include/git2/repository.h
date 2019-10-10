@@ -301,13 +301,11 @@ typedef struct {
 #define GIT_REPOSITORY_INIT_OPTIONS_INIT {GIT_REPOSITORY_INIT_OPTIONS_VERSION}
 
 /**
- * Initialize git_repository_init_options structure
+ * Initializes a `git_repository_init_options` with default values. Equivalent
+ * to creating an instance with GIT_REPOSITORY_INIT_OPTIONS_INIT.
  *
- * Initializes a `git_repository_init_options` with default values. Equivalent to
- * creating an instance with `GIT_REPOSITORY_INIT_OPTIONS_INIT`.
- *
- * @param opts The `git_repository_init_options` struct to initialize.
- * @param version The struct version; pass `GIT_REPOSITORY_INIT_OPTIONS_VERSION`.
+ * @param opts the `git_repository_init_options` struct to initialize
+ * @param version Version of struct; pass `GIT_REPOSITORY_INIT_OPTIONS_VERSION`
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_repository_init_init_options(
@@ -370,7 +368,7 @@ GIT_EXTERN(int) git_repository_head_for_worktree(git_reference **out, git_reposi
  */
 GIT_EXTERN(int) git_repository_head_detached(git_repository *repo);
 
-/**
+/*
  * Check if a worktree's HEAD is detached
  *
  * A worktree's HEAD is detached when it points directly to a

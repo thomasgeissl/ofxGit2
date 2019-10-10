@@ -96,9 +96,9 @@ typedef int (*git_repository_create_cb)(
 /**
  * Clone options structure
  *
- * Initialize with `GIT_CLONE_OPTIONS_INIT`. Alternatively, you can
- * use `git_clone_init_options`.
+ * Use the GIT_CLONE_OPTIONS_INIT to get the default settings, like this:
  *
+ *		git_clone_options opts = GIT_CLONE_OPTIONS_INIT;
  */
 typedef struct git_clone_options {
 	unsigned int version;
@@ -169,13 +169,11 @@ typedef struct git_clone_options {
 	GIT_FETCH_OPTIONS_INIT }
 
 /**
- * Initialize git_clone_options structure
+ * Initializes a `git_clone_options` with default values. Equivalent to
+ * creating an instance with GIT_CLONE_OPTIONS_INIT.
  *
- * Initializes a `git_clone_options` with default values. Equivalent to creating
- * an instance with GIT_CLONE_OPTIONS_INIT.
- *
- * @param opts The `git_clone_options` struct to initialize.
- * @param version The struct version; pass `GIT_CLONE_OPTIONS_VERSION`.
+ * @param opts The `git_clone_options` struct to initialize
+ * @param version Version of struct; pass `GIT_CLONE_OPTIONS_VERSION`
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_clone_init_options(

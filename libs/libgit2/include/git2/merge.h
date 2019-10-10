@@ -203,13 +203,12 @@ typedef struct {
 #define GIT_MERGE_FILE_OPTIONS_INIT {GIT_MERGE_FILE_OPTIONS_VERSION}
 
 /**
- * Initialize git_merge_file_options structure
- *
  * Initializes a `git_merge_file_options` with default values. Equivalent to
- * creating an instance with `GIT_MERGE_FILE_OPTIONS_INIT`.
+ * creating an instance with GIT_MERGE_FILE_OPTIONS_INIT.
  *
- * @param opts The `git_merge_file_options` struct to initialize.
- * @param version The struct version; pass `GIT_MERGE_FILE_OPTIONS_VERSION`.
+ * @param opts the `git_merge_file_options` instance to initialize.
+ * @param version the version of the struct; you should pass
+ *        `GIT_MERGE_FILE_OPTIONS_VERSION` here.
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_merge_file_init_options(
@@ -301,13 +300,12 @@ typedef struct {
 	GIT_MERGE_OPTIONS_VERSION, GIT_MERGE_FIND_RENAMES }
 
 /**
- * Initialize git_merge_options structure
- *
  * Initializes a `git_merge_options` with default values. Equivalent to
- * creating an instance with `GIT_MERGE_OPTIONS_INIT`.
+ * creating an instance with GIT_MERGE_OPTIONS_INIT.
  *
- * @param opts The `git_merge_options` struct to initialize.
- * @param version The struct version; pass `GIT_MERGE_OPTIONS_VERSION`.
+ * @param opts the `git_merge_options` instance to initialize.
+ * @param version the version of the struct; you should pass
+ *        `GIT_MERGE_OPTIONS_VERSION` here.
  * @return Zero on success; -1 on failure.
  */
 GIT_EXTERN(int) git_merge_init_options(
