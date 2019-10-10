@@ -6,11 +6,10 @@ meta:
 	ADDON_URL = https://github.com/thomasgeissl/ofxGit2
 
 linux64:
-	# ADDON_PKG_CONFIG_LIBRARIES = libgit2
-	# ADDON_LIBS = libs/libgit2/lib/linux64/libgit2.a
-	# ADDON_LIBS += libs/libssh2/lib/linux64/libssh2.a
-	ADDON_LDFLAGS = -lgit2 -lssh2 -L/usr/lib/x86_64-linux-gnu/
-	# ADDON_INCLUDES = /usr/include/libssh2.h
+    ADDON_PKG_CONFIG_LIBRARIES = libgit2
+	ADDON_LIBS_EXCLUDE = libs/libgit2 libs/libssh2
+	ADDON_INCLUDES_EXCLUDE = libs/libgit2/include libs/libssh2/include
+
 vs:
 	ADDON_INCLUDES_EXCLUDE = libs/libgit2/include/git2/sys
 	ADDON_LIBS += libs/libgit2/lib/vs/x64/git2.lib
