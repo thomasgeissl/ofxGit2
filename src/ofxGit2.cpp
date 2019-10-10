@@ -1,4 +1,7 @@
+#include "git2.h"
+
 #include "ofxGit2.h"
+#include "ofLog.h"
 
 ofxGit::repository::repository(std::string path) : _path(path) {
 	git_libgit2_init();

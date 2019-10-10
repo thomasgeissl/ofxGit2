@@ -1,6 +1,9 @@
 #pragma once
-#include "ofMain.h"
-#include "git2.h"
+
+#include <string>
+
+struct git_transfer_progress;
+struct git_repository;
 
 namespace ofxGit {
 	class repository {
