@@ -1,1 +1,0 @@
-downloaded from https://bintray.com/djs/libgit2/libgit2-win-x64/0.20.0
