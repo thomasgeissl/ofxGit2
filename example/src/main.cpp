@@ -1,7 +1,14 @@
-#include "ofMain.h"
 #include "ofxGit2.h"
+#include "ofFileUtils.h"
+#include "ofLog.h"
+#include "ofUtils.h"
 
 int main(){
+    ofDirectory dataPath = ofToDataPath(".");
+    if (!dataPath.exists())
+    {
+        dataPath.create();
+    }
     ofxGit::repository repo(ofToDataPath("ofxMidi"));
     ofLogNotice("main") << "cloning ofxMidi: https://github.com/danomatika/ofxMidi.git";
     repo.clone("https://github.com/danomatika/ofxMidi.git");
