@@ -710,7 +710,7 @@ GIT_EXTERN(int) git_reference_normalize_name(
  */
 GIT_EXTERN(int) git_reference_peel(
 	git_object **out,
-	const git_reference *ref,
+	git_reference *ref,
 	git_otype type);
 
 /**
