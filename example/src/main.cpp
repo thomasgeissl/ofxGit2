@@ -25,4 +25,12 @@ int main()
     repo.checkoutCommit("511173e7a43b0162cc80c8f630a51b6f0fe66925");
     ofLogNotice("main") << "successfully checked out tag 1.1.1: " << repo.checkoutTag("1.1.1");
     ofLogNotice("main") << "current hash: " << repo.getCommitHash();
+
+    ofxGit::repository::setSilent(true);
+    ofxGit::repository git2Repo(ofToDataPath("ofxGit2"));
+    ofLogNotice("main") << "cloning ofxGit2: https://github.com/thomasgeissl/ofxGit2.git";
+    git2Repo.clone("https://github.com/thomasgeissl/ofxGit2.git");
+    git2Repo.checkout("bb058e93dbf7189d4caf957ff257b9fba95b6a54");
+    ofLogNotice("main") << "current hash " << git2Repo.getCommitHash();
+    ofLogNotice("main") << "remote origin url " << git2Repo.getRemoteUrl("origin");
 }
