@@ -11,6 +11,7 @@ class repository
 {
 public:
 	repository(std::string path);
+	bool open(std::string path);
 
 	bool isRepository();
 	bool clone(std::string url);
@@ -19,6 +20,8 @@ public:
 	bool checkout(std::string checkout);
 	std::string getCommitHash();
 	std::string getRemoteUrl(std::string name = "origin");
+
+	std::string getLongHash(std::string hash);
 
 	bool isTag(std::string name);
 	// bool isBranch(std::string name);
