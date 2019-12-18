@@ -24,7 +24,10 @@ bool ofxGit::repository::open(std::string path)
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 	if (_error < 0)
 	{
-		ofLogError("ofxGit2") << "could not open repository";
+		if (!_silent)
+		{
+			ofLogError("ofxGit2") << "could not open repository";
+		}
 		return false;
 	}
 	return true;
@@ -127,7 +130,6 @@ bool ofxGit::repository::checkoutTag(std::string name)
 		auto tagNameString = std::string(tagName);
 		auto oidString = std::string(oidstr);
 
-		ofLogNotice() << tagNameString << ", " << oidString;
 		if (oidString.find(std::string(name), 0) == 0)
 		{
 			tagRef = tagName;
@@ -137,10 +139,6 @@ bool ofxGit::repository::checkoutTag(std::string name)
 			if (tagNameString.find(std::string(name), 0) > 0 && tagNameString.find(std::string(name), 0) < 64)
 			{
 				tagRef = tagNameString;
-			}
-			else
-			{
-				ofLogNotice() << "tag not found";
 			}
 		}
 	}
@@ -192,7 +190,10 @@ bool ofxGit::repository::checkoutTag(std::string name)
 
 bool ofxGit::repository::checkout(std::string checkout)
 {
-	ofLogNotice("ofxGit2") << "checking out " << checkout;
+	if (!_silent)
+	{
+		ofLogVerbose("ofxGit2") << "checking out " << checkout;
+	}
 	if (isCommit(checkout))
 	{
 		return checkoutCommit(checkout);
