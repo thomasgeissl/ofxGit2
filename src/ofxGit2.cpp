@@ -100,7 +100,6 @@ bool ofxGit::repository::checkoutTag(std::string name)
 	std::string tagRef = "refs/tags/" + name;
 
 	std::string masterRefString = "refs/heads/master";
-	// TODO: check name vs oid
 	if (!_silent)
 	{
 		ofLogVerbose("ofxGit2") << "checking out tag " << name;
@@ -214,11 +213,16 @@ std::string ofxGit::repository::getRemoteUrl(std::string name)
 	git_remote *remote = nullptr;
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 	_error = git_remote_lookup(&remote, _repo, name.c_str());
+	std::string url;
+
+	if (_error >= 0)
+	{
+		url = std::string(git_remote_url(remote));
+	}
+	git_remote_free(remote);
 
 	// const char *name = git_remote_name(remote);
-	const char *url = git_remote_url(remote);
 	// const char *pushurl = git_remote_pushurl(remote);
-	// TODO: free remote
 	return url;
 }
 std::string ofxGit::repository::getCommitHash()
