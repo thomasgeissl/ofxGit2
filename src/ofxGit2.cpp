@@ -37,6 +37,10 @@ bool ofxGit::repository::clone(std::string url)
 
 bool ofxGit::repository::checkoutCommit(std::string hash)
 {
+	if (!_silent)
+	{
+		ofLogNotice("ofxGit2") << "checking out commit " << hash;
+	}
 	if (!isCommit(hash))
 	{
 		return false;
@@ -64,6 +68,7 @@ bool ofxGit::repository::checkoutCommit(std::string hash)
 	std::cout << git_oid_tostr_s(&oid) << " " << git_commit_summary(commit) << std::endl;
 	git_repository_set_head_detached(_repo, &oid);
 	git_commit_free(commit);
+	ofLogNotice() << "done";
 	return true;
 }
 bool ofxGit::repository::checkoutTag(std::string name)
