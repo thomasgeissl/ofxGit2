@@ -13,6 +13,26 @@ ofxGit::repository::repository(std::string path) : _path(path)
 {
 	git_libgit2_init();
 }
+
+bool ofxGit::repository::open(std::string path)
+{
+	if (!_silent)
+	{
+		ofLogNotice("ofxGit2") << "opening repository " << path;
+	}
+	_path = path;
+	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
+	if (_error < 0)
+	{
+		if (!_silent)
+		{
+			ofLogError("ofxGit2") << "could not open repository";
+		}
+		return false;
+	}
+	return true;
+}
+
 bool ofxGit::repository::isRepository()
 {
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
@@ -45,6 +65,7 @@ bool ofxGit::repository::checkoutCommit(std::string hash)
 	{
 		return false;
 	}
+	hash = getLongHash(hash);
 	git_object *treeish = NULL;
 	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
 	opts.progress_cb = checkoutProgressCallback;
@@ -65,7 +86,7 @@ bool ofxGit::repository::checkoutCommit(std::string hash)
 
 	git_commit *commit = nullptr;
 	git_commit_lookup(&commit, _repo, &oid);
-	std::cout << git_oid_tostr_s(&oid) << " " << git_commit_summary(commit) << std::endl;
+	// std::cout << git_oid_tostr_s(&oid) << " " << git_commit_summary(commit) << std::endl;
 	git_repository_set_head_detached(_repo, &oid);
 	git_commit_free(commit);
 	ofLogNotice() << "done";
@@ -73,10 +94,13 @@ bool ofxGit::repository::checkoutCommit(std::string hash)
 }
 bool ofxGit::repository::checkoutTag(std::string name)
 {
-	std::string tagRef = name;
+	if (!_silent)
+	{
+		ofLogNotice("ofxGit2") << "checking out tag " << name;
+	}
+	std::string tagRef = "refs/tags/" + name;
 
 	std::string masterRefString = "refs/heads/master";
-	// TODO: check name vs oid
 	if (!_silent)
 	{
 		ofLogVerbose("ofxGit2") << "checking out tag " << name;
@@ -92,39 +116,6 @@ bool ofxGit::repository::checkoutTag(std::string name)
 		return false;
 	}
 
-	// auto each_ref = [](git_reference *ref, void *payload) {
-	// 	std::string *name = (std::string *)payload;
-	// 	// ofLogNotice() << "name: " << name;
-	// 	auto refName = git_reference_name(ref);
-	// 	switch (git_reference_type(ref))
-	// 	{
-	// 	case GIT_REF_OID:
-	// 	{
-	// 		char oidstr[41] = {0};
-	// 		git_oid_fmt(oidstr, git_reference_target(ref));
-	// 		// ofLogNotice("ofxGit2") << refName << " is a direct reference to " << oidstr;
-	// 		auto oidString = std::string(oidstr);
-	// 		if (oidString.find(*name, 0) == 0)
-	// 		{
-	// 			ofLogNotice("checkout") << refName;
-	// 		}
-	// 		break;
-	// 	}
-	// 	case GIT_REF_SYMBOLIC:
-	// 	{
-	// 		// ofLogNotice("ofxGit2") << refName << " is a symbolic reference to " << git_reference_symbolic_target(ref);
-	// 		break;
-	// 	}
-	// 	}
-	// 	return 0;
-	// };
-	// git_reference_foreach(_repo, each_ref, &name);
-
-	// auto each_name_cb = [](const char *name, void *payload) {
-	// 	std::string *name = (std::string *)payload;
-	// }
-	// int error = git_reference_foreach_glob(_repo, "refs/tags/*", each_name_cb, &name);
-
 	git_reference_iterator *iter = NULL;
 	_error = git_reference_iterator_glob_new(&iter, _repo, "refs/tags/*");
 
@@ -135,17 +126,19 @@ bool ofxGit::repository::checkoutTag(std::string name)
 		git_reference_name_to_id(&oid, _repo, tagName);
 		char oidstr[41] = {0};
 		git_oid_fmt(oidstr, &oid);
+
+		auto tagNameString = std::string(tagName);
 		auto oidString = std::string(oidstr);
+
 		if (oidString.find(std::string(name), 0) == 0)
 		{
 			tagRef = tagName;
 		}
 		else
 		{
-			auto tagNameString = std::string(tagName);
-			if (tagNameString.find(std::string(name), 0) > 0)
+			if (tagNameString.find(std::string(name), 0) > 0 && tagNameString.find(std::string(name), 0) < 64)
 			{
-				tagRef = tagName;
+				tagRef = tagNameString;
 			}
 		}
 	}
@@ -197,6 +190,10 @@ bool ofxGit::repository::checkoutTag(std::string name)
 
 bool ofxGit::repository::checkout(std::string checkout)
 {
+	if (!_silent)
+	{
+		ofLogVerbose("ofxGit2") << "checking out " << checkout;
+	}
 	if (isCommit(checkout))
 	{
 		return checkoutCommit(checkout);
@@ -217,11 +214,16 @@ std::string ofxGit::repository::getRemoteUrl(std::string name)
 	git_remote *remote = nullptr;
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 	_error = git_remote_lookup(&remote, _repo, name.c_str());
+	std::string url;
+
+	if (_error >= 0)
+	{
+		url = std::string(git_remote_url(remote));
+	}
+	git_remote_free(remote);
 
 	// const char *name = git_remote_name(remote);
-	const char *url = git_remote_url(remote);
 	// const char *pushurl = git_remote_pushurl(remote);
-	// TODO: free remote
 	return url;
 }
 std::string ofxGit::repository::getCommitHash()
@@ -252,6 +254,32 @@ std::string ofxGit::repository::getCommitHash()
 	git_oid_tostr(shortsha, 10, &oid);
 	return shortsha;
 }
+
+std::string ofxGit::repository::getLongHash(std::string hash)
+{
+	std::string value = "";
+	git_revwalk *walker = nullptr;
+	git_revwalk_new(&walker, _repo);
+	git_revwalk_sorting(walker, GIT_SORT_NONE);
+	git_revwalk_push_head(walker);
+	git_oid oid;
+
+	while (!git_revwalk_next(&oid, walker))
+	{
+		git_commit *commit = nullptr;
+		git_commit_lookup(&commit, _repo, &oid);
+		auto oidString = std::string(git_oid_tostr_s(&oid));
+		if (oidString.find(std::string(hash), 0) == 0)
+		{
+			value = oidString;
+		}
+		git_commit_free(commit);
+	}
+	git_revwalk_free(walker);
+
+	return value;
+}
+
 bool ofxGit::repository::isTag(std::string name)
 {
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
@@ -276,22 +304,27 @@ bool ofxGit::repository::isTag(std::string name)
 // }
 bool ofxGit::repository::isCommit(std::string hash)
 {
-	const char *sha = hash.c_str();
+	bool value = false;
+	git_revwalk *walker = nullptr;
+	git_revwalk_new(&walker, _repo);
+	git_revwalk_sorting(walker, GIT_SORT_NONE);
+	git_revwalk_push_head(walker);
 	git_oid oid;
-	_error = git_oid_fromstr(&oid, sha);
-	if (_error < 0)
+
+	while (!git_revwalk_next(&oid, walker))
 	{
-		// ofLogError("ofxGit2") << "Could not get oid from string:" << giterr_last()->message;
-		return false;
+		git_commit *commit = nullptr;
+		git_commit_lookup(&commit, _repo, &oid);
+		auto oidString = std::string(git_oid_tostr_s(&oid));
+		if (oidString.find(std::string(hash), 0) == 0)
+		{
+			value = true;
+		}
+		git_commit_free(commit);
 	}
-	git_commit *commit;
-	_error = git_commit_lookup(&commit, _repo, &oid);
-	if (_error < 0)
-	{
-		// ofLogError("ofxGit2") << "Could not lookup commit:" << giterr_last()->message;
-		return false;
-	}
-	return _error >= 0;
+	git_revwalk_free(walker);
+
+	return value;
 }
 
 int ofxGit::repository::transferProgressCallback(const git_transfer_progress *stats, void *payload)
