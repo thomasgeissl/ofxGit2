@@ -7,12 +7,6 @@ class ofApp : public ofxUnitTestsApp
 {
     void run()
     {
-        ofDirectory dataPath = ofDirectory(ofToDataPath("."));
-        if (!dataPath.exists())
-        {
-            dataPath.create();
-        }
-
         ofxGit::repository repo(ofToDataPath("ofxMidi"));
         repo.clone("https://github.com/danomatika/ofxMidi.git");
         ofxTestEq("https://github.com/danomatika/ofxMidi.git", repo.getRemoteUrl("origin"), "correct remote url");
@@ -32,7 +26,6 @@ class ofApp : public ofxUnitTestsApp
 
 int main()
 {
-    ofInit();
     auto window = std::make_shared<ofAppNoWindow>();
     auto app = std::make_shared<ofApp>();
     ofRunApp(window, app);
