@@ -47,7 +47,6 @@ bool ofxGit::repository::clone(std::string url)
 	clone_opts.fetch_opts.callbacks.transfer_progress = transferProgressCallback;
 
 	int error = git_clone(&_repo, url.c_str(), _path.c_str(), &clone_opts);
-	std::cout << std::endl;
 	if (error < 0)
 	{
 		if (!_silent)
@@ -69,10 +68,6 @@ bool ofxGit::repository::checkoutCommit(std::string hash)
 		return false;
 	}
 	hash = getLongHash(hash);
-	git_object *treeish = NULL;
-	git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
-	opts.progress_cb = checkoutProgressCallback;
-	opts.checkout_strategy = GIT_CHECKOUT_SAFE;
 	_error = git_repository_open_ext(&_repo, _path.c_str(), GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 
 	const char *sha = hash.c_str();
@@ -92,11 +87,11 @@ bool ofxGit::repository::checkoutCommit(std::string hash)
 	// std::cout << git_oid_tostr_s(&oid) << " " << git_commit_summary(commit) << std::endl;
 	git_repository_set_head_detached(_repo, &oid);
 	git_commit_free(commit);
-	ofLogNotice() << "done";
 	return true;
 }
 bool ofxGit::repository::checkoutTag(std::string name)
 {
+
 	if (!_silent)
 	{
 		ofLogNotice("ofxGit2") << "checking out tag " << name;
@@ -119,7 +114,11 @@ bool ofxGit::repository::checkoutTag(std::string name)
 		return false;
 	}
 
-	git_reference_iterator *iter = NULL;
+	git_reference_iterator *iter = nullptr;
+	git_reference *masterRef = nullptr;
+	git_reference *new_ref = nullptr;
+	git_revwalk *walker = nullptr;
+
 	_error = git_reference_iterator_glob_new(&iter, _repo, "refs/tags/*");
 
 	const char *tagName = NULL;
@@ -150,15 +149,17 @@ bool ofxGit::repository::checkoutTag(std::string name)
 	{
 	}
 
-	git_reference *masterRef;
 	_error = git_reference_lookup(&masterRef, _repo, "refs/heads/master");
-
-	git_reference *new_ref;
 	_error = git_reference_lookup(&new_ref, _repo, tagRef.c_str());
-
-	git_revwalk *walker;
 	_error = git_revwalk_new(&walker, _repo);
 	_error = git_revwalk_push_ref(walker, tagRef.c_str());
+
+	auto freePointers = [&]() {
+		git_reference_iterator_free(iter);
+		git_reference_free(masterRef);
+		git_reference_free(new_ref);
+		git_revwalk_free(walker);
+	};
 
 	git_oid oid;
 	_error = git_revwalk_next(&oid, walker);
@@ -174,6 +175,7 @@ bool ofxGit::repository::checkoutTag(std::string name)
 		{
 			ofLogError("ofxGit2") << "an error occured while detaching head: " << giterr_last()->message;
 		}
+		freePointers();
 		return false;
 	}
 
@@ -184,10 +186,11 @@ bool ofxGit::repository::checkoutTag(std::string name)
 		{
 			ofLogError("ofxGit2") << "an error occured while checking head: " << giterr_last()->message;
 		}
+		freePointers();
 		return false;
 	}
 
-	git_revwalk_free(walker);
+	freePointers();
 	return _error >= 0;
 }
 
@@ -205,6 +208,10 @@ bool ofxGit::repository::checkout(std::string checkout)
 	{
 		return checkoutTag(checkout);
 	}
+	// else if (isBranch(checkout))
+	// {
+	// 	return checkoutBranch(checkout);
+	// }
 	return false;
 }
 
@@ -250,11 +257,13 @@ std::string ofxGit::repository::getCommitHash()
 		{
 			ofLogError("ofxGit2") << "Could not get oid of head " << giterr_last()->message;
 		}
+		git_commit_free(commit);
 		return "-1";
 	}
 
 	char shortsha[10] = {0};
 	git_oid_tostr(shortsha, 10, &oid);
+	git_commit_free(commit);
 	return shortsha;
 }
 
@@ -293,13 +302,12 @@ bool ofxGit::repository::isTag(std::string name)
 	}
 	git_object *treeish = nullptr;
 	_error = git_revparse_single(&treeish, _repo, name.c_str());
+	git_object_free(treeish);
 	if (_error < 0)
 	{
 		// ofLogError("ofxGit2") << "Could not parse revision: " << giterr_last()->message;
 		return false;
 	}
-	// git_checkout_options opts = GIT_CHECKOUT_OPTIONS_INIT;
-	// _error = git_checkout_tree(_repo, treeish, &opts);
 	return _error >= 0;
 }
 // bool ofxGit::repository::isBranch(std::string name){
