@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 
 struct git_transfer_progress;
@@ -7,6 +8,19 @@ struct git_repository;
 
 namespace ofxGit
 {
+class commandLineUtils
+{
+public:
+	static int print(std::string text)
+	{
+		std::cout << text << std::flush;
+		return text.size();
+	}
+	static void del(int size)
+	{
+		std::cout << std::string(size, '\b');
+	}
+};
 class repository
 {
 public:

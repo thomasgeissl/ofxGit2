@@ -2,12 +2,14 @@
 
 #include "ofxGit2.h"
 #include "ofLog.h"
+#include "ofUtils.h"
 #include <string>
 
 // some good explanations can be found here: https://ben.straub.cc/2013/06/03/refs-tags-and-branching/
 
 static bool _silent = false;
-static float _progress;
+static float _progress = 0;
+static int _numberOfCharsPrinted = 0;
 
 ofxGit::repository::repository(std::string path) : _path(path)
 {
@@ -45,6 +47,7 @@ bool ofxGit::repository::clone(std::string url)
 	clone_opts.fetch_opts.callbacks.transfer_progress = transferProgressCallback;
 
 	int error = git_clone(&_repo, url.c_str(), _path.c_str(), &clone_opts);
+	std::cout << std::endl;
 	if (error < 0)
 	{
 		if (!_silent)
@@ -330,27 +333,48 @@ bool ofxGit::repository::isCommit(std::string hash)
 int ofxGit::repository::transferProgressCallback(const git_transfer_progress *stats, void *payload)
 {
 	float v = (float)stats->received_objects / stats->total_objects;
-	if (abs(_progress - v) > 0.1)
+	if (!_silent)
 	{
-		if (!_silent)
+		if (v < 1)
 		{
-			ofLogNotice("ofxGit2", "transfer progress: %f %%", v * 100);
+			ofxGit::commandLineUtils::del(_numberOfCharsPrinted);
+			int length = v * 10;
+			std::string text = "transfer progress: [" + ofToString(v * 100, 0, 3, ' ') + "] " + std::string(length, '-');
+			_numberOfCharsPrinted = ofxGit::commandLineUtils::print(text);
 		}
-		_progress = v;
+		else
+		{
+			if (_numberOfCharsPrinted != 0)
+			{
+				std::cout << " done" << std::endl;
+				_numberOfCharsPrinted = 0;
+			}
+		}
 	}
+	_progress = v;
 	return 0;
 }
 
 void ofxGit::repository::checkoutProgressCallback(const char *path, size_t cur, size_t tot, void *payload)
 {
 	float v = (float)cur / tot;
-	if (abs(_progress - v) > 0.1)
+	if (!_silent)
 	{
-		if (!_silent)
+		if (v < 1)
 		{
-			ofLogNotice("ofxGit2", "checkout progress: %f %%", v * 100);
+			ofxGit::commandLineUtils::del(_numberOfCharsPrinted);
+			int length = v * 10;
+			std::string text = "checkout progress: [" + ofToString(v * 100, 0, 3, ' ') + "] " + std::string(length, '-');
+			_numberOfCharsPrinted = ofxGit::commandLineUtils::print(text);
 		}
-		_progress = v;
+		else
+		{
+			if (_numberOfCharsPrinted != 0)
+			{
+				std::cout << " done" << std::endl;
+				_numberOfCharsPrinted = 0;
+			}
+		}
 	}
 }
 void ofxGit::repository::setSilent(bool value)
