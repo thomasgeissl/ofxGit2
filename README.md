@@ -8,6 +8,12 @@ This is a work in progress and only features needed for ofPackageManager are add
 ## Build status
 [![Build Status](https://travis-ci.org/thomasgeissl/ofxGit2.svg?branch=master)](https://travis-ci.org/thomasgeissl/ofxGit2)
 
+## Compiling libgit2
+* brew install libssh2
+* clone repo: git clone git@github.com:libgit2/libgit2.git
+* mkdir build && cmake .. -DBUILD_SHARED_LIBS=OFF -DTHREADSAFE=ON && cmake --build .
+
+
 ## TODOs
 * include libs for linux and win, update addon_config.mk
 
