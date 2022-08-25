@@ -5,6 +5,11 @@ meta:
 	ADDON_TAGS = "git" "libgit2"
 	ADDON_URL = https://github.com/thomasgeissl/ofxGit2
 
+osx:
+	ADDON_LIBS += libs/libgit2/lib/osx/libgit2.a
+	ADDON_FRAMEWORKS += Security
+	ADDON_LDFLAGS += -liconv
+
 linux64:
     ADDON_PKG_CONFIG_LIBRARIES = libgit2
 	ADDON_LIBS_EXCLUDE = libs/libgit2 libs/libssh2
